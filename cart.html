@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Your Cart</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="home.html">Your Store</a>
+        <a href="product.html" class="btn btn-outline-light">Back to Products</a>
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <h2 class="text-center mb-4">Items in Your Cart</h2>
+      <ul id="cart-items" class="list-group mb-3"></ul>
+      <div class="text-center">
+        <button class="btn btn-danger" onclick="clearCart()">Clear Cart</button>
+      </div>
+    </div>
+    <form id="pdfForm" method="POST" action="download_pdf.php">
+  <input type="hidden" name="cartData" id="cartData">
+  <div class="text-center my-3">
+    <button type="submit" class="btn btn-success" onclick="preparePDF()">Download as PDF</button>
+  </div>
+</form>
+
+
+    <footer class="bg-dark text-center py-3 text-white">
+      <h5>&copy; All Rights Reserved</h5>
+    </footer>
+
+    <script>
+      function loadCart() {
+        const items = JSON.parse(localStorage.getItem('cart')) || [];
+        const list = document.getElementById('cart-items');
+        list.innerHTML = '';
+        if (items.length === 0) {
+          list.innerHTML = '<li class="list-group-item text-center">Your cart is empty.</li>';
+          return;
+        }
+
+        items.forEach((item, index) => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.textContent = item;
+          const btn = document.createElement('button');
+          btn.textContent = 'Remove';
+          btn.className = 'btn btn-sm btn-outline-danger';
+          btn.onclick = () => removeItem(index);
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+      }
+
+      function removeItem(index) {
+        const items = JSON.parse(localStorage.getItem('cart')) || [];
+        items.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(items));
+        loadCart();
+      }
+
+      function clearCart() {
+        localStorage.removeItem('cart');
+        loadCart();
+      }
+      function preparePDF() {
+        const items = JSON.parse(localStorage.getItem('cart')) || [];
+        document.getElementById('cartData').value = items.join('\n');
+      }
+
+
+      // Load cart on page load
+      loadCart();
+    </script>
+  </body>
+</html>
